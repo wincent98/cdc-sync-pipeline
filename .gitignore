@@ -1,0 +1,12 @@
+target/
+node_modules/
+venv/
+.venv/
+__pycache__/
+dist/
+build/
+.gradle/
+.idea/
+*.iml
+.DS_Store
+*.log
