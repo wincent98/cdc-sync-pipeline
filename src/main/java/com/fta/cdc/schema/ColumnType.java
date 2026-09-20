@@ -42,6 +42,31 @@ public final class ColumnType {
         return length;
     }
 
+    /**
+     * Returns whether this type is the same type or a silent widening of {@code previous}:
+     * INT -&gt; BIGINT and longer VARCHAR are the only supported widenings.
+     */
+    public boolean isWideningOf(ColumnType previous) {
+        if (this.equals(previous)) {
+            return true;
+        }
+        if (previous.kind == Kind.INT && kind == Kind.BIGINT) {
+            return true;
+        }
+        return previous.kind == Kind.VARCHAR && kind == Kind.VARCHAR && length >= previous.length;
+    }
+
+    /**
+     * Adapts an upstream value to the effective target type. Integer values decoded from a
+     * widened INT -&gt; BIGINT column are normalized to Long; everything else passes through.
+     */
+    public Object coerce(Object value) {
+        if (kind == Kind.BIGINT && value instanceof Integer) {
+            return ((Integer) value).longValue();
+        }
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
